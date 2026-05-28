@@ -2,22 +2,19 @@ import posts from '../data/posts.js';
 
 function index(request, responce) {
     const { title, maxPrepTime } = request.query;
-    const prepTimeNumber = Number(prep_time);
+    const prepTimeNumber = Number(maxPrepTime);
 
     const postsFiltered = posts.filter(post => {
-        if (!isNaN(maxPrepTime)) {
-            if (post.prep_time > maxPrepTime) {
+        if (!isNaN(prepTimeNumber)) {
+            if (post.prep_time > prepTimeNumber) {
                 return false;
             }
         }
+
         if (title !== undefined) {
-            for (i = 0; i < post.length; i++) {
-                const currentTitle = post.title[i];
-                if (currentTitle.indexOf(title)) {
-                    return true;
-                }
+            if (!post.title.toLowerCase().includes(title.toLowerCase())) {
+                return false;
             }
-            return false;
         }
         return true;
     })
@@ -65,7 +62,7 @@ function store(request, responce) {
     const { title, prepTime } = request.body;
     const prepTimeAsNumber = Number(prepTime);
 
-    if (isNaN(prepTime) || prepTime <= 0) {
+    if (isNaN(prepTimeAsNumber) || prepTimeAsNumber <= 0) {
         responce
             .status(400)
             .json({
@@ -130,7 +127,7 @@ function destroy(request, responce) {
     const { id } = request.params;
     const idAsNumber = Number(id.trim());
 
-    const postIndex = posts.indexOf(post =>{
+    const postIndex = posts.findIndex(post =>{
         return post.id === idAsNumber;
     })
 
@@ -155,6 +152,7 @@ function destroy(request, responce) {
     }
     posts.splice(postIndex, 1);
     responce.sendStatus(204);
+    console.log(posts)
 }
 
 export { index, show, store, modify, destroy };

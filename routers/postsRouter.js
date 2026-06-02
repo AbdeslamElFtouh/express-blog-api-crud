@@ -4,9 +4,13 @@ import { index, show, store, modify, destroy } from '../controllers/postsControl
 const router = express.Router();
 
 router.get('/', index);
-router.get('/:id', show);
-router.post('/:id', store);
-router.patch('/', modify);
-router.delete('/:id', destroy);
+router.get('/:slug', show);
+router.post('/', store);
+router.put('/:slug', modify);
+router.delete('/:slug', destroy);
 
 export default router;
+
+
+
+

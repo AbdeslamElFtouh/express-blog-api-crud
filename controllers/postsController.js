@@ -1,46 +1,25 @@
 import posts from '../data/posts.js';
+import { filterPosts, findPostIndexBySlug, validateBody, generateSlug, generateId } from '../utils/posts.js';
 
-function index(request, responce) {
-    const { title, maxPrepTime } = request.query;
-    const prepTimeNumber = Number(maxPrepTime);
+function index(request, response) {
+    const filteredList = filterPosts(request.query);
 
-    const postsFiltered = posts.filter(post => {
-        if (!isNaN(prepTimeNumber)) {
-            if (post.prep_time > prepTimeNumber) {
-                return false;
-            }
-        }
-
-        if (title !== undefined) {
-            if (!post.title.toLowerCase().includes(title.toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    })
-    responce.json(postsFiltered)
+    response.json({
+        error: null,
+        results: filteredList
+    });
 }
 
-function show(request, responce) {
-    const { id } = request.params;
-    const idAsNumber = Number(id.trim());
+function show(request, response) {
+    const { slug } = request.params;
+    const realSlug = slug.trim();
 
     const postFound = posts.find(post => {
-        return post.id === idAsNumber;
+        return post.slug === realSlug;
     })
 
-    if (idAsNumber <= 0 || isNaN(idAsNumber)) {
-        responce
-            .status(400)
-            .json({
-                error: 'uncorrect ID',
-                results: null
-            })
-        return;
-    }
-
     if (postFound === undefined) {
-        responce
+        response
             .status(404)
             .json({
                 error: 'Resource not found',
@@ -49,100 +28,88 @@ function show(request, responce) {
         return;
     }
 
-    responce.json({
-        error: null,
-        results: postFound
-    })
-    return;
+    const { id, ...otherProperties } = postFound;
 
+    response.json({
+        error: null,
+        results: otherProperties
+    });
 }
 
-function store(request, responce) {
-    console.log(request.body);
-    const { title, prepTime } = request.body;
-    const prepTimeAsNumber = Number(prepTime);
-
-    if (isNaN(prepTimeAsNumber) || prepTimeAsNumber <= 0) {
-        responce
-            .status(400)
-            .json({
-                error: 'Preparation time must be a valid number',
+function store(request, response) {
+    const validation = validateBody(request.body);
+    if (validation.error) {
+        response
+            .status(400).json({
+                error: validation.error,
                 results: null
-            })
+            });
         return;
     }
 
-    if (!title || title.trim() === '') {
-        responce.status(400).json({
-            error: 'Il campo "name" è obbligatorio',
+    const { title, prep_time, tags, published } = validation.data;
+
+    const newPost = {
+        id: generateId(),
+        title,
+        prep_time,
+        tags,
+        slug: null,
+        published: true
+    };
+
+    newPost.slug = generateSlug(newPost);
+
+    posts.push(newPost);
+
+    response
+        .status(201)
+        .json({
+            error: null,
+            results: newPost
+        });
+}
+
+function modify(request, response) {
+    const postIndex = findPostIndexBySlug(request.params.slug);
+
+    if (postIndex === -1) {
+        response.status(404).json({
+            error: 'Nessun post trovato',
             results: null
         });
         return;
     }
 
-    responce
-        .status(201)
-        .json({
-            message: 'Creation request',
-            data: { title, prepTime }
-        })
-}
-
-function modify(request, responce) {
-    const { id } = request.params;
-    const idAsNumber = Number(id.trim());
-
-    const postFound = posts.find(post => {
-        return post.id === idAsNumber
-    });
-
-    if (idAsNumber <= 0 || isNaN(idAsNumber)) {
-        responce
-            .status(400)
-            .json({
-                error: 'uncorrect ID',
-                results: null
-            })
+    const validation = validateBody(request.body);
+    if (validation.error) {
+        response.status(400).json({
+            error: validation.error,
+            results: null
+        });
         return;
     }
 
-    if (postFound === undefined) {
-        responce
-            .status(404)
-            .json({
-                error: 'Resource not found',
-                results: null
-            })
-        return;
-    }
+    const { title, prep_time, tags, published } = validation.data;
+    const oldPost = posts[postIndex];
+    const postUpdated = { ...oldPost, title, prep_time, tags, published };
 
-    responce.json({
+    if (title !== oldPost.title) {
+        postUpdated.slug = generateSlug(postUpdated);
+    }
+    posts.splice(postIndex, 1, postUpdated);
+
+    response.status(200).json({
         error: null,
-        results: `Modification request for post with id: ${idAsNumber}`
-
+        results: postUpdated
     });
 }
 
-function destroy(request, responce) {
-    const { id } = request.params;
-    const idAsNumber = Number(id.trim());
-
-    const postIndex = posts.findIndex(post =>{
-        return post.id === idAsNumber;
-    })
-
-    if (idAsNumber <= 0 || isNaN(idAsNumber)) {
-        responce
-            .status(400)
-            .json({
-                error: 'uncorrect ID',
-                results: null
-            })
-        return;
-    }
+function destroy(request, response) {
+    const postIndex = findPostIndexBySlug(request.params.slug);
 
     if (postIndex === -1) {
-        responce
+        response
             .status(404)
             .json({
                 error: 'Resource not found',
@@ -151,8 +118,13 @@ function destroy(request, responce) {
         return;
     }
     posts.splice(postIndex, 1);
-    responce.sendStatus(204);
+    response.sendStatus(204);
     console.log(posts)
 }
 
 export { index, show, store, modify, destroy };
+
+
+
+
+

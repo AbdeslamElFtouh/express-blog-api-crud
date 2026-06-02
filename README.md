@@ -56,7 +56,7 @@ Ampliare le funzionalità delle API del blog implementando la creazione (`Store`
 3. All'interno della rotta `Store`, stampa i dati in arrivo nel terminale (`console.log(req.body)`) e restituiscili al client come risposta JSON.
 
 ## Milestone 2: Validazione Backend e Debug
-* Testai tutti i possibili casi di errore nei dati inviati dal client (es. campi obbligatori mancanti, formati errati).
+* Testa tutti i possibili casi di errore nei dati inviati dal client (es. campi obbligatori mancanti, formati errati).
 * Sistema il codice per correggere eventuali bug o dimenticanze nella validazione.
 * *Nota:* La validazione lato backend è fondamentale; è normale che una parte significativa del codice sia dedicata a questo aspetto.
 

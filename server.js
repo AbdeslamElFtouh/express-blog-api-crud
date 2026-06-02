@@ -3,7 +3,7 @@ import postsRouter from './routers/postsRouter.js';
 
 const app = express();
 const port = process.env.SERVER_PORT || 3000;
-const url = process.env.SERVER_URL || localhost;
+const url = process.env.SERVER_URL || 'localhost';
 
 app.use(express.json())
 app.use('/posts', postsRouter)

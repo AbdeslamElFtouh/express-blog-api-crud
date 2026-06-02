@@ -42,6 +42,9 @@ Verificare su **Postman** tutti i casi limite (ID non presenti, valori errati, I
 }
 ```
 
+
+
+
 # Express Blog - API CRUD (Parte 2)
 
 Ampliare le funzionalità delle API del blog implementando la creazione (`Store`) e l'aggiornamento (`Update`) dei post, integrando la gestione del body della richiesta, la validazione dei dati e la gestione degli errori.
@@ -79,3 +82,29 @@ Scegli e implementa una delle seguenti funzionalità:
 * **Soft-Delete:** Implementa l'eliminazione logica dei post tramite un flag. Puoi usare una chiave già esistente oppure aggiungerne una specifica nel modello dati (es. `deleted: true/false`). I post contrassegnati come eliminati non dovranno più apparire nelle normali chiamate di lettura.
 
 
+
+
+# Express Blog - MIDDLEWARES
+
+Completare le API Express integrando i middleware per ottimizzare la gestione degli errori, delle rotte non trovate e per semplificare il flusso dei dati (validazione o gestione parametri).
+
+## Milestone 1: Gestione Errori e 404
+
+Dopo aver completato tutte le operazioni CRUD, mettiamo in sicurezza le nostre API inserendo:
+1. **Middleware per le rotte non registrate (404):** Se viene chiamato un endpoint inesistente, il middleware dovrà rispondere con un messaggio di errore e uno status code appropriato (`404 Not Found`).
+2. **Middleware per la gestione degli errori (500):** Se viene generato un errore interno o un crash durante l'esecuzione di una rotta, questo middleware si occuperà di intercettarlo e rispondere con un messaggio chiaro e lo status appropriato (`500 Internal Server Error`).
+
+## Milestone 2: Ottimizzazione del Flusso (A scelta)
+
+Scegli e implementa **una** delle seguenti opzioni per semplificare il codice dei tuoi controller:
+
+* **Opzione A:** Un middleware per semplificare le rotte con parametro `id` / `slug`.
+* **Opzione B:** Un middleware per semplificare la validazione delle rotte in creazione o aggiornamento (`POST` / `PUT` / `PATCH`).
+
+---
+
+## Bonus: Agenti AI con LangChain
+
+Abbiamo visto come creare un agente con **LangChain**.
+* Crea qualche **Tool** personalizzato per la tua API.
+* Testa l'utilizzo dell'agente interagendo con **Claude**.

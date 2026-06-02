@@ -38,7 +38,7 @@ function validateBody(body) {
         title.trim() === ''
     ) {
         return {
-            error: 'Il campo "title" è obbligatorio',
+            error: '"title" is required and must be a non-empty string',
             data: null
         };
     }
@@ -47,7 +47,7 @@ function validateBody(body) {
         prep_time < 0
     ) {
         return {
-            error: 'Il campo "prep_time" deve essere un numero positivo',
+            error: '"prep_time" must be a positive number',
             data: null
         };
     }
@@ -57,14 +57,14 @@ function validateBody(body) {
         tags.some(t => typeof t !== 'string')
     ) {
         return {
-            error: 'Il campo "tags" deve essere un array di stringhe',
+            error: '"tags" must be an array of non-empty strings',
             data: null
         };
     }
 
     if (typeof published !== 'boolean') {
         return {
-            error: 'Il campo "published" deve essere un booleano',
+            error: '"Published" must be a boolean value',
             data: null
         };
     }
@@ -95,4 +95,10 @@ function generateId() {
     return lastPost.id + 1;
 }
 
-export { filterPosts, findPostIndexBySlug, validateBody, generateSlug, generateId };
+export { 
+    filterPosts, 
+    findPostIndexBySlug, 
+    validateBody, 
+    generateSlug, 
+    generateId, 
+};

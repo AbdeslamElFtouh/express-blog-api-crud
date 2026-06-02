@@ -1,7 +1,7 @@
 import posts from '../data/posts.js';
 import { filterPosts, findPostIndexBySlug, validateBody, generateSlug, generateId } from '../utils/posts.js';
 
-function index(request, response) {
+function index(request, response, next) {
     const filteredList = filterPosts(request.query);
 
     response.json({
@@ -10,7 +10,7 @@ function index(request, response) {
     });
 }
 
-function show(request, response) {
+function show(request, response, next) {
     const { slug } = request.params;
     const realSlug = slug.trim();
 
@@ -36,7 +36,7 @@ function show(request, response) {
     });
 }
 
-function store(request, response) {
+function store(request, response, next) {
     const validation = validateBody(request.body);
     if (validation.error) {
         response
@@ -55,7 +55,7 @@ function store(request, response) {
         prep_time,
         tags,
         slug: null,
-        published: true
+        published
     };
 
     newPost.slug = generateSlug(newPost);
@@ -70,12 +70,12 @@ function store(request, response) {
         });
 }
 
-function modify(request, response) {
+function modify(request, response, next) {
     const postIndex = findPostIndexBySlug(request.params.slug);
 
     if (postIndex === -1) {
         response.status(404).json({
-            error: 'Nessun post trovato',
+            error: 'Resource not found',
             results: null
         });
         return;
@@ -105,7 +105,7 @@ function modify(request, response) {
     });
 }
 
-function destroy(request, response) {
+function destroy(request, response, next) {
     const postIndex = findPostIndexBySlug(request.params.slug);
 
     if (postIndex === -1) {
